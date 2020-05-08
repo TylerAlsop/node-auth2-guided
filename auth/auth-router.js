@@ -1,5 +1,6 @@
 const express = require("express")
 const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken")
 const Users = require("../users/users-model")
 const restrict = require("../middleware/restrict")
 
@@ -43,10 +44,18 @@ router.post("/login", async (req, res, next) => {
 
 		// creates a new session for the user and saves it in memory.
 		// it's this easy since we're using `express-session`
-		req.session.user = user
+		// req.session.user = user
+
+		const tokenPayload = {
+			userId: user.id,
+			userRole: "base", // this would normally come from the database
+		}
+		const token = jwt.sign(tokenPayload, "tyler's secret string")
+
 
 		res.json({
 			message: `Welcome ${user.username}!`,
+			token: token,
 		})
 	} catch(err) {
 		next(err)
