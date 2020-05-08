@@ -50,7 +50,7 @@ router.post("/login", async (req, res, next) => {
 			userId: user.id,
 			userRole: "base", // this would normally come from the database
 		}
-		const token = jwt.sign(tokenPayload, "tyler's secret string")
+		const token = jwt.sign(tokenPayload, process.env.JWT_SECRET)
 
 
 		res.json({
