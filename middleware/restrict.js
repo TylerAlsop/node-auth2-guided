@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken")
 
-function restrict() {
+function restrict(role = "base") {
 	return async (req, res, next) => {
 		const authError = {
 			message: "Invalid credentials",
@@ -14,14 +14,15 @@ function restrict() {
 			// 	return res.status(401).json(authError)
 			// }
 
-			const token = req.headers.authorization
+			console.log(req.headers)
+			const token = req.cookies.token
 
 			if (!token) {
-				res.status(401).json(authError)
+				return res.status(401).json(authError)
 			}
 
 			jwt.verify(token, process.env.JWT_SECRET, (err, decodedPayload) => {
-				if(err) {
+				if(err || decodedPayload.userRole !== role) {
 					res.status(401).json(authError)
 				}
 

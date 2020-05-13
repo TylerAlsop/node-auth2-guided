@@ -48,21 +48,21 @@ router.post("/login", async (req, res, next) => {
 
 		const tokenPayload = {
 			userId: user.id,
-			userRole: "base", // this would normally come from the database
+			userRole: "admin", // this would normally come from the database
 		}
-		const token = jwt.sign(tokenPayload, process.env.JWT_SECRET)
 
+		res.cookie("token", jwt.sign(tokenPayload, process.env.JWT_SECRET))
 
 		res.json({
 			message: `Welcome ${user.username}!`,
-			token: token,
+			// token: jwt.sign(tokenPayload, process.env.JWT_SECRET),
 		})
 	} catch(err) {
 		next(err)
 	}
 })
 
-router.get("/logout", restrict(), (req, res, next) => {
+router.get("/logout", restrict("admin"), (req, res, next) => {
 	// this will delete the session in the database and try to expire the cookie,
 	// though it's ultimately up to the client if they delete the cookie or not.
 	// but it becomes useless to them once the session is deleted server-side.
